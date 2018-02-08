@@ -5,6 +5,14 @@ which also generated a [guide](GUIDE.md). (actually it generates a
 README.md but I moved it to GUIDE.md in order to keep this README as
 concise as possible.
 
+## Running the app
+
+```bash
+cd serverless-instagram-react
+yarn install
+yarn start
+```
+
 ## Here are the steps followed to create this app:
 
 ```bash
@@ -12,6 +20,15 @@ concise as possible.
 npx create-react-app serverless-instagram-react
 cd serverless-instagram-react
 
-# install bootstrap
+# install bootstrap 4.0.0
 yarn add bootstrap
+
+# install open iconic (for icons)
+yarn add open-iconic
+
+# install react-dropzone for drag-and-drop uploads
+yarn add react-dropzone
+
+# install missing dependencies
+yarn add jquery popper.js
 ```
