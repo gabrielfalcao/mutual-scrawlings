@@ -27,22 +27,17 @@ var imageController = {
     updateVideoOnScreen: function(videoElement, videoObj) {
 
         videoElement.find('img').show();
-
         // set the video URL
         videoElement.find('img').attr('src', videoObj.image);
     },
     fetchFromDynamoDB: function () {
         var that = this;
-        var request = {
+        // console.log(request)
+        $.ajax({
             url: that.data.config.apiBaseUrl + '/list',
             type: 'GET',
             processData: false,
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('userToken')
-            }
-        }
-        // console.log(request)
-        $.ajax(request, function (data, status) {
+            }, function (data, status) {
             console.log(status)
             console.log(data)
             jQuery.each(data, function() {
@@ -51,7 +46,7 @@ var imageController = {
               // $("#" + i).append(document.createTextNode(" - " + val));
             });
         });
-        
+
 
     }
 };

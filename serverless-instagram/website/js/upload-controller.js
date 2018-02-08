@@ -43,13 +43,20 @@ var uploadController = {
         // fd.append('signature', data.signature);
         fd.append('file', file);//, file.name);
 
+        $.ajaxSetup({
+            'beforeSend': function (xhr) {
+               console.log('nothign')
+            }
+        });
+
         $.ajax({
             url: data.url,
             type: 'PUT',
             data: fd,
             processData: false,
             contentType: file.type,
-            xhr: this.progress
+            xhr: this.progress,
+            headers: {}
         }).done(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
@@ -57,6 +64,11 @@ var uploadController = {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
             alert('Failed to upload');
+        });
+        $.ajaxSetup({
+            'beforeSend': function (xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('userToken'));
+            }
         });
     },
     progress: function () {
