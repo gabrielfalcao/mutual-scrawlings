@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
+import request from 'superagent'
 
 import Navbar from './components/Navbar'
 
@@ -13,16 +14,30 @@ class App extends Component {
             previewImage: null,
             userToken: null,
             userProfile: null,
+            isUploading: false
         };
     }
     onDrop(acceptedFiles, rejectedFiles) {
         if (acceptedFiles.length > 0) {
-            let image = acceptedFiles[0];
+            let file = acceptedFiles[0];
             this.setState({
-                previewImage: image.preview
+                previewImage: file.preview,
+                isUploading: true
             })
+
+            const upload = request.post('/upload');
+            upload.attach(file.name, file);
+            upload.end(this.onUploadFinished);
         }
         console.log("Accepted Files", acceptedFiles);
+    }
+    onUploadFinished(error, response) {
+        if (response.ok) {
+            this.setState({
+                previewImage: null,
+                isUploading: false
+            })
+        }
     }
     onAuthenticationChanged(token, profile) {
         this.setState({
@@ -32,7 +47,8 @@ class App extends Component {
     }
     render() {
         const {auth0Config} = this.props;
-        const {userProfile} = this.state;
+        const {userProfile, isUploading} = this.state;
+        const showDropzone = userProfile != null && !isUploading;
 
         return (
             <div className="App">
@@ -48,7 +64,7 @@ class App extends Component {
                 </div>
 
                 <div className="container">
-                    {userProfile != null ? <Dropzone className="mx-auto d-block" onDrop={this.onDrop.bind(this)} accept="video/*,image/*">
+                    {showDropzone ? <Dropzone className="mx-auto d-block" onDrop={this.onDrop.bind(this)} accept="video/*,image/*">
                         <p style={{height: "300px", backgroundColor: "#CCC"}}>Drag-and-drop your image or video here...</p>
                     </Dropzone> : null}
                     {this.state.previewImage != null ? <img src={this.state.previewImage} alt="preview" /> : null}

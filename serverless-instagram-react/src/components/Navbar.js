@@ -33,8 +33,6 @@ class Navbar extends Component {
             profile: profile,
         });
 
-        const {onAuthenticationChanged} = this.props;
-
         this.authenticationDidChange(token, profile)
 
     }
