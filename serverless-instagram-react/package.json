@@ -4,8 +4,12 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.0.0",
+    "jquery": "^3.3.1",
+    "open-iconic": "^1.1.1",
+    "popper.js": "^1.12.9",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-dropzone": "^4.2.7",
     "react-scripts": "1.1.0"
   },
   "scripts": {
