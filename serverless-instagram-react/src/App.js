@@ -1,29 +1,93 @@
-import React, { Component } from 'react';
-import Navbar from './components/Navbar'
+import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
+import request from 'superagent'
+import $ from 'jquery'
+import Navbar from './components/Navbar'
 
 import popcorn from './popcorn.png'
+import {AuthStorage} from './utils'
+
+
+const API_BASE_URL = "https://giuy1199u4.execute-api.us-east-1.amazonaws.com/dev"
+
 
 class App extends Component {
     constructor(props) {
         super(props);
+
+        const token = AuthStorage.getToken()
+        const profile = AuthStorage.getProfile()
+
         this.state = {
-            previewImage: null
+            previewImage: null,
+            userToken: token,
+            userProfile: profile,
+            isUploading: false
         };
     }
-    onDrop(acceptedFiles, rejectedFiles) {
-        if (acceptedFiles.length > 0) {
-            let image = acceptedFiles[0];
+    onRequestUpload(acceptedFiles, rejectedFiles) {
+        if (acceptedFiles.length < 1) {
+            // TODO: show an error to the user
+            return;
+        }
+        const {userToken} = this.state;
+        const file = acceptedFiles[0];
+        const encodedFileName = encodeURI(file.name);
+        const url = `${API_BASE_URL}/get_signed_url?filename=${encodedFileName}`
+        const bearer = `Bearer ${userToken}`
+        console.log(`requesting signed S3 url for file ${file.name} with ${bearer}`, url)
+
+        $.get(url, function (response, status) {
+            console.log(response, status)
+            console.log('url signed successfully', response)
+            this.performUpload(response.url, file);
+        })
+    }
+    performUpload(signedUrl, file) {
+        this.setState({
+            previewImage: file.preview,
+            isUploading: true
+        })
+
+        const upload = request.put(signedUrl);
+        upload.attach(file.name, file);
+        upload.end(this.onUploadFinished);
+    }
+    onUploadFinished(error, response) {
+        if (error) {
+            console.error("failed to upload file", error)
+        }
+
+        if (response.ok) {
             this.setState({
-                previewImage: image.preview
+                previewImage: null,
+                isUploading: false
+            })
+            console.log('success uploading file')
+        }
+    }
+    onAuthenticationChanged(token, profile) {
+        this.setState({
+            userToken: token,
+            userProfile: profile,
+        })
+        if (token == null) {
+            this.setState({
+                isUploading: false,
+                previewImage: null,
             })
         }
-        console.log("Accepted Files", acceptedFiles);
     }
     render() {
+        const {auth0Config} = this.props;
+        const {userProfile, isUploading} = this.state;
+        const showDropzone = userProfile != null && !isUploading;
+
         return (
             <div className="App">
-                <Navbar />
+                <Navbar auth0Config={auth0Config}
+                        onAuthenticationChanged={this.onAuthenticationChanged.bind(this)}/>
+
                 <div className="jumbotron">
                     <div className="container">
                         <img src={popcorn} alt="popcorn" height="128" className="float-left" />
@@ -33,13 +97,13 @@ class App extends Component {
                 </div>
 
                 <div className="container">
-                    <Dropzone className="mx-auto d-block" onDrop={this.onDrop.bind(this)} accept="video/*,image/*">
-                        <p style={{height: "300px", backgroundColor: "#CCC"}}>Drag-and-drop your image or video here...</p>
-                    </Dropzone>
+            {showDropzone ? <Dropzone className="mx-auto d-block" onDrop={this.onRequestUpload.bind(this)} accept="video/*,image/*">
+    <span className="btn btn-info ">
+        <span className="oi oi-plus"></span>
+        </span>
+
+                    </Dropzone> : null}
                     {this.state.previewImage != null ? <img src={this.state.previewImage} alt="preview" /> : null}
-                    {/* <button className="btn btn-info ">
-                        <span class="oi oi-plus"></span>
-                        </button> */}
                 </div>
             </div>
         );

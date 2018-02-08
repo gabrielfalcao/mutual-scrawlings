@@ -32,3 +32,8 @@ yarn add react-dropzone
 # install missing dependencies
 yarn add jquery popper.js
 ```
+
+
+## More Resources
+
+- [ReactJS Auth0 tutorial](https://auth0.com/blog/reactjs-authentication-tutorial/)
