@@ -1,0 +1,140 @@
+# serverless.yml
+service: serverless-instagram-gabriel
+
+# lock us to a pre-2.0 (not yet released) version of the serverless framework to protect us from breaking changes
+frameworkVersion: ">=1.16.0 <2.0.0"
+
+plugins:
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: python3.6
+  memorySize: 128
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: arn:aws:s3:::${file(./secrets.json):IMAGE_BUCKET_NAME}
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: arn:aws:s3:::${file(./secrets.json):IMAGE_BUCKET_NAME}/*
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${file(./secrets.json):DYNAMODB_TABLE}"
+
+
+package:
+  individually: true
+  exclude:
+    - '*/**'
+
+functions:
+  auth:
+    handler: aws_auth.handler
+    environment:
+      AUTH0_SECRET: ${file(./secrets.json):AUTH0_SECRET}
+      AUTH0_AUDIENCE: ${file(./secrets.json):AUTH0_AUDIENCE}
+    package:
+      include:
+        - aws_auth.py
+
+  signurl:
+    handler: auth_s3.handler
+    environment:
+      S3_BUCKET: ${file(./secrets.json):IMAGE_BUCKET_NAME}
+    package:
+      include:
+        - auth_s3.py
+    events:
+      - http:
+          path: /get_signed_url
+          cors: true
+          method: get
+          authorizer: auth
+  meetadata:
+    handler: metadata_dynamodb.create
+    environment:
+        DYNAMODB_TABLE: ${file(./secrets.json):DYNAMODB_TABLE}
+    package:
+      include:
+        - metadata_dynamodb.py
+  list:
+    handler: list_metadata.list
+    environment:
+        DYNAMODB_TABLE: ${file(./secrets.json):DYNAMODB_TABLE}
+    package:
+      include:
+        - list_metadata.py
+    events:
+      - http:
+          path: /list
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    ImageBucket:
+      Type: AWS::S3::Bucket
+      DeletionPolicy: Retain
+      Properties:
+        BucketName: ${file(./secrets.json):IMAGE_BUCKET_NAME}
+        AccessControl : PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedMethods:
+                - "GET"
+                - "POST"
+                - "PUT"
+              AllowedHeaders:
+                - "*"
+              MaxAge: 3000
+        NotificationConfiguration:
+          LambdaConfigurations:
+            - Event: "s3:ObjectCreated:*"
+              Function:
+                "Fn::GetAtt": [ MeetadataLambdaFunction, Arn ]
+
+    MetadataPermissionImageBucket:
+      DependsOn:
+        - MeetadataLambdaFunction
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt": [ MeetadataLambdaFunction, Arn ]
+        Action: "lambda:InvokeFunction"
+        Principal: "s3.amazonaws.com"
+        SourceArn: "arn:aws:s3:::${file(./secrets.json):IMAGE_BUCKET_NAME}"
+
+    DynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: image
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: image
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${file(./secrets.json):DYNAMODB_TABLE}
