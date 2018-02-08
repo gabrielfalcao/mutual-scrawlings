@@ -15,7 +15,7 @@ def list(event, context):
         "statusCode": 200,
         "body": json.dumps(result['Items'], cls=DecimalEncoder),
         'headers': {
-            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Origin": "http://localhost:3000",
             "Access-Control-Allow-Credentials": True
         }
     }
