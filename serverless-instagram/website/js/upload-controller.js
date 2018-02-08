@@ -30,6 +30,12 @@ var uploadController = {
             var file = $('#upload').get(0).files[0];
             var requestDocumentUrl = that.data.config.apiBaseUrl + '/get_signed_url?filename='+ encodeURI(file.name);
 
+            $.ajaxSetup({
+                'beforeSend': function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('userToken'));
+                }
+            });
+
             $.get(requestDocumentUrl, function (data, status) {
                 that.upload(file, data, that)
             });

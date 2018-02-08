@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Auth0Lock from 'auth0-lock'
-
+import {AuthStorage} from '../utils'
 
 class Navbar extends Component {
     constructor(props) {
@@ -18,14 +18,13 @@ class Navbar extends Component {
             token: token,
             profile: profile,
         };
-        console.log("Navbar.constructor", token, profile)
     }
     storeTokenAndProfile(token, profile) {
-        const jsonProfile = JSON.stringify(profile)
         // Save the JWT token.
-        localStorage.setItem('token', token)
+        AuthStorage.storeToken(token)
+
         // Save the profile
-        localStorage.setItem('profile', jsonProfile)
+        AuthStorage.storeProfile(profile)
 
         // update the state
         this.setState({
@@ -34,7 +33,6 @@ class Navbar extends Component {
         });
 
         this.authenticationDidChange(token, profile)
-
     }
     authenticationDidChange(token, profile) {
         const {onAuthenticationChanged} = this.props;
@@ -42,11 +40,9 @@ class Navbar extends Component {
         if (onAuthenticationChanged) {
             onAuthenticationChanged(token, profile);
         }
-
     }
     componentWillMount() {
         const {lock} = this;
-        console.log(lock);
         lock.on("authenticated", (authResult) => {
             // Use the token in authResult to getUserInfo() and save it to localStorage
             lock.getUserInfo(authResult.accessToken, (error, profile) => {
