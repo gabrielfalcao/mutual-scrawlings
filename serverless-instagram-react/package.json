@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "auth0": "^2.9.1",
+    "auth0-lock": "^11.2.2",
     "bootstrap": "^4.0.0",
     "jquery": "^3.3.1",
     "open-iconic": "^1.1.1",
+    "pac-resolver": "^3.0.0",
     "popper.js": "^1.12.9",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
