@@ -35,17 +35,10 @@ var uploadController = {
         this.uiElements.uploadProgressBar.find('.progress-bar').css('width', '0');
 
         var fd = new FormData();
-        // fd.append('key', data.key)
-        // fd.append('acl', 'public-read');
-        // fd.append('Content-Type', file.type);
-        // fd.append('AWSAccessKeyId', data.access_key);
-        // fd.append('policy', data.encoded_policy)
-        // fd.append('signature', data.signature);
         fd.append('file', file);//, file.name);
 
         $.ajaxSetup({
             'beforeSend': function (xhr) {
-               console.log('nothign')
             }
         });
 

@@ -13,7 +13,6 @@ var imageController = {
         this.uiElements.loadingIndicator = $('#loading-indicator');
 
         this.data.config = config;
-
         this.fetchFromDynamoDB();
     },
     addVideoToScreen: function (videoObj) {
@@ -32,19 +31,16 @@ var imageController = {
     },
     fetchFromDynamoDB: function () {
         var that = this;
-        // console.log(request)
-        $.ajax({
-            url: that.data.config.apiBaseUrl + '/list',
-            type: 'GET',
-            processData: false,
-            }, function (data, status) {
-            console.log(status)
-            console.log(data)
-            jQuery.each(data, function() {
-                console.log(this)
-                that.addVideoToScreen(this);
-              // $("#" + i).append(document.createTextNode(" - " + val));
-            });
+
+        $.ajax(
+            {
+                url: that.data.config.apiBaseUrl + '/list',
+                type: 'GET',
+                processData: false
+            }).done(function (data, status) {
+                $.each(data, function() {
+                    that.addVideoToScreen(this);
+                });
         });
 
 
