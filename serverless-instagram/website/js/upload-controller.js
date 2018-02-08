@@ -4,7 +4,10 @@ var uploadController = {
     },
     uiElements: {
         uploadButton: null,
-        uploadProgressBar: null
+        uploadProgressBar: null,
+        videoCardTemplate: null,
+        videoList: null,
+        loadingIndicator: null
     },
     init: function (configConstants) {
         this.data.config = configConstants;
@@ -13,6 +16,13 @@ var uploadController = {
         this.uiElements.uploadProgressBar = $('#upload-progress');
 
         this.wireEvents();
+
+        this.uiElements.videoCardTemplate = $('#video-template');
+        this.uiElements.videoList = $('#video-list');
+        this.uiElements.loadingIndicator = $('#loading-indicator');
+
+        // this.data.config = config;
+        this.fetchFromDynamoDB();
     },
     wireEvents: function () {
         var that = this;
@@ -29,34 +39,37 @@ var uploadController = {
     },
     upload: function (file, data, that) {
         console.log(data)
-
         this.uiElements.uploadButtonContainer.hide();
         this.uiElements.uploadProgressBar.show();
         this.uiElements.uploadProgressBar.find('.progress-bar').css('width', '0');
 
-        var fd = new FormData();
-        // fd.append('key', data.key)
-        // fd.append('acl', 'public-read');
-        // fd.append('Content-Type', file.type);
-        // fd.append('AWSAccessKeyId', data.access_key);
-        // fd.append('policy', data.encoded_policy)
-        // fd.append('signature', data.signature);
-        fd.append('file', file);//, file.name);
+        $.ajaxSetup({
+            'beforeSend': function (xhr) {
+            }
+        });
 
         $.ajax({
             url: data.url,
             type: 'PUT',
-            data: fd,
+            data: file,
             processData: false,
             contentType: file.type,
             xhr: this.progress
         }).done(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
+            setTimeout(function () {
+                that.fetchFromDynamoDB();
+            }, 5000);
         }).fail(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
             alert('Failed to upload');
+        });
+        $.ajaxSetup({
+            'beforeSend': function (xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('userToken'));
+            }
         });
     },
     progress: function () {
@@ -67,5 +80,33 @@ var uploadController = {
             $('#upload-progress').find('.progress-bar').css('width', percentage + '%');
         };
         return xhr;
+    },addVideoToScreen: function (videoObj) {
+        // clone the template video element
+        var newVideoElement = this.uiElements.videoCardTemplate.clone().attr('id', videoObj.image);
+
+        this.updateVideoOnScreen(newVideoElement, videoObj);
+
+        this.uiElements.videoList.prepend(newVideoElement);
+    },
+    updateVideoOnScreen: function(videoElement, videoObj) {
+
+        videoElement.find('img').show();
+        // set the video URL
+        videoElement.find('img').attr('src', videoObj.image);
+    },
+    fetchFromDynamoDB: function () {
+        var that = this;
+
+        $.ajax(
+            {
+                url: that.data.config.apiBaseUrl + '/list',
+                type: 'GET',
+                processData: false
+            }).done(function (data, status) {
+                that.uiElements.videoList.html("");
+                $.each(data, function() {
+                    that.addVideoToScreen(this);
+                });
+        });
     }
-}
+};
