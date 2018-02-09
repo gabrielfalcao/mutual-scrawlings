@@ -65,7 +65,9 @@ var mediaController = {
         }).done(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
-            that.fetchFromDynamoDB();
+            setTimeout(function(){
+                that.fetchFromDynamoDB();
+            }, 5000);
         }).fail(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
