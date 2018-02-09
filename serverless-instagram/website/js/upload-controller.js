@@ -5,20 +5,20 @@ var uploadController = {
     uiElements: {
         uploadButton: null,
         uploadProgressBar: null,
-        videoCardTemplate: null,
-        videoList: null,
+        imageCardTemplate: null,
+        imageList: null,
         loadingIndicator: null
     },
     init: function (configConstants) {
         this.data.config = configConstants;
         this.uiElements.uploadButton = $('#upload');
-        this.uiElements.uploadButtonContainer = $('#upload-video-button');
+        this.uiElements.uploadButtonContainer = $('#upload-image-button');
         this.uiElements.uploadProgressBar = $('#upload-progress');
 
         this.wireEvents();
 
-        this.uiElements.videoCardTemplate = $('#video-template');
-        this.uiElements.videoList = $('#video-list');
+        this.uiElements.imageCardTemplate = $('#image-template');
+        this.uiElements.imageList = $('#image-list');
         this.uiElements.loadingIndicator = $('#loading-indicator');
 
         // this.data.config = config;
@@ -87,19 +87,19 @@ var uploadController = {
             $('#upload-progress').find('.progress-bar').css('width', percentage + '%');
         };
         return xhr;
-    },addVideoToScreen: function (videoObj) {
-        // clone the template video element
-        var newVideoElement = this.uiElements.videoCardTemplate.clone().attr('id', videoObj.image);
+    },addImageToScreen: function (imageObj) {
+        // clone the template image element
+        var newImageElement = this.uiElements.imageCardTemplate.clone().attr('id', imageObj.image);
 
-        this.updateVideoOnScreen(newVideoElement, videoObj);
+        this.updateImageOnScreen(newImageElement, imageObj);
 
-        this.uiElements.videoList.prepend(newVideoElement);
+        this.uiElements.imageList.prepend(newImageElement);
     },
-    updateVideoOnScreen: function(videoElement, videoObj) {
+    updateImageOnScreen: function(imageElement, imageObj) {
 
-        videoElement.find('img').show();
-        // set the video URL
-        videoElement.find('img').attr('src', videoObj.image);
+        imageElement.find('img').show();
+        // set the image URL
+        imageElement.find('img').attr('src', imageObj.image);
     },
     fetchFromDynamoDB: function () {
         var that = this;
@@ -110,9 +110,9 @@ var uploadController = {
                 type: 'GET',
                 processData: false
             }).done(function (data, status) {
-                that.uiElements.videoList.html("");
+                that.uiElements.imageList.html("");
                 $.each(data, function() {
-                    that.addVideoToScreen(this);
+                    that.addImageToScreen(this);
                 });
             });
     }

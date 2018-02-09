@@ -17,7 +17,7 @@ var userController = {
         this.uiElements.profileButton = $('#user-profile');
         this.uiElements.profileNameLabel = $('#profilename');
         this.uiElements.profileImage = $('#profilepicture');
-        this.uiElements.uploadButton = $('#upload-video-button');
+        this.uiElements.uploadButton = $('#upload-image-button');
 
         this.data.config = config;
         this.data.auth0Lock = new Auth0Lock(
