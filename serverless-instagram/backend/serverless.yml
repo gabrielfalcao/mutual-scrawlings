@@ -66,15 +66,15 @@ functions:
           cors: true
           method: get
           authorizer: auth
-  meetadata:
-    handler: metadata_dynamodb.create
+  metadata:
+    handler: metadata_dynamodb.handler
     environment:
         DYNAMODB_TABLE: ${file(./secrets.json):DYNAMODB_TABLE}
     package:
       include:
         - metadata_dynamodb.py
   list:
-    handler: list_metadata.list
+    handler: list_metadata.handler
     environment:
         DYNAMODB_TABLE: ${file(./secrets.json):DYNAMODB_TABLE}
     package:
@@ -108,15 +108,15 @@ resources:
           LambdaConfigurations:
             - Event: "s3:ObjectCreated:*"
               Function:
-                "Fn::GetAtt": [ MeetadataLambdaFunction, Arn ]
+                "Fn::GetAtt": [ MetadataLambdaFunction, Arn ]
 
     MetadataPermissionImageBucket:
       DependsOn:
-        - MeetadataLambdaFunction
+        - MetadataLambdaFunction
       Type: AWS::Lambda::Permission
       Properties:
         FunctionName:
-          "Fn::GetAtt": [ MeetadataLambdaFunction, Arn ]
+          "Fn::GetAtt": [ MetadataLambdaFunction, Arn ]
         Action: "lambda:InvokeFunction"
         Principal: "s3.amazonaws.com"
         SourceArn: "arn:aws:s3:::${file(./secrets.json):IMAGE_BUCKET_NAME}"
@@ -125,12 +125,10 @@ resources:
       Type: 'AWS::DynamoDB::Table'
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: image
+          - AttributeName: image
             AttributeType: S
         KeySchema:
-          -
-            AttributeName: image
+          - AttributeName: image
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

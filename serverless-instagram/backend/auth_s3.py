@@ -12,51 +12,49 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 BUCKET = os.environ['S3_BUCKET']
+HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Credentials": True
+}
 
 
 def handler(event, context):
     logger.info(event)
+    content_type = event.get('queryStringParameters', {}).get('content_type')
+    if not content_type:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'message': 'Missing content_type query parameter!'}),
+            'headers': HEADERS
+        }
 
-    key = str(uuid.uuid1())
-    content_type = get_content_type(event)
+    key = generate_key(content_type)
     params = {
         'Bucket': BUCKET,
         'Key': key,
         'ACL': 'public-read',
-        'Metadata': {
-            'user': event.get('requestContext').get('authorizer').get('user_id'),
-        }
+        'ContentType': content_type,
+        'Metadata': {'user': event['requestContext']['authorizer']['principalId']}
     }
-    if content_type:
-        params['ContentType'] = content_type
-    try:
-        url = s3.generate_presigned_url(
-            'put_object',
-            Params=params,
-            ExpiresIn=1000,
-            HttpMethod='PUT'
-        )
 
-    except Exception as e:
-        logger.info('exception: ' + str(e))
-        raise Exception
-    else:
-        return {
-            'statusCode': 200, 'body': json.dumps(
-                {'url': url, 'key': key, 'content_type': content_type}
-            ),
-            'headers': {
-                "Access-Control-Allow-Origin": "http://localhost:3000",
-                "Access-Control-Allow-Credentials": True
-            },
-        }
+    url = s3.generate_presigned_url(
+        'put_object',
+        Params=params,
+        ExpiresIn=1000,
+        HttpMethod='PUT'
+    )
+
+    return {
+        'statusCode': 200, 'body': json.dumps(
+            {'url': url, 'key': key, 'content_type': content_type}
+        ),
+        'headers': HEADERS
+    }
 
 
-def get_content_type(event):
-    content_type = None
-    filename = event.get('queryStringParameters', {}).get('filename')
-    if filename:
-        extension = '.' + filename.split('.')[-1]
-        if len(extension) > 1:
-            content_type = mimetypes.types_map.get(extension)
-    return content_type
+def generate_key(content_type):
+    file_extension = mimetypes.guess_extension(content_type, strict=False)
+    key = str(uuid.uuid1())
+    if file_extension:
+        return key + file_extension
+    return key
