@@ -27,20 +27,22 @@ var uploadController = {
     wireEvents: function () {
         var that = this;
         this.uiElements.uploadButton.on('change', function (result) {
-            var file = $('#upload').get(0).files[0];
-            var requestDocumentUrl = that.data.config.apiBaseUrl + '/get_signed_url?content_type='+ encodeURI(file.type);
+            let file = $('#upload').get(0).files[0];
+            let requestDocumentUrl = that.data.config.apiBaseUrl + '/get_signed_url?content_type='+ encodeURI(file.type);
+            let fileSizeMB = Math.round(100 * file.size / (1024 * 1024)) / 100;
+            if(fileSizeMB > 1){
+               alert(
+                   "File cannot be greater than 1MB! The file uploaded: " + fileSizeMB
+               );
+               this.value = "";
+            } else {
 
-            $.ajaxSetup({
-                'beforeSend': function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('userToken'));
-                }
-            });
+                $.get(requestDocumentUrl, function (data, status) {
+                    that.upload(file, data, that)
+                });
 
-            $.get(requestDocumentUrl, function (data, status) {
-                that.upload(file, data, that)
-            });
-
-            this.value = null;
+                this.value = null;
+            }
         });
     },
     upload: function (file, data, that) {
@@ -65,7 +67,7 @@ var uploadController = {
             that.uiElements.uploadProgressBar.hide();
             setTimeout(function () {
                 that.fetchFromDynamoDB();
-            }, 5000);
+            }, 4000);
         }).fail(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();

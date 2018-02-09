@@ -4,6 +4,5 @@ var configConstants = {
         clientId: 'hrIRGALItbQgDRM2m4NrpSZ5RucNu3zd',
         audience: 'serverless-instagram'
     },
-    apiBaseUrl: 'https://giuy1199u4.execute-api.us-east-1.amazonaws.com/dev',
-    firebaseUrl: 'https://giuy1199u4.execute-api.us-east-1.amazonaws.com/dev'
+    apiBaseUrl: 'https://58bi7zmpoa.execute-api.us-east-1.amazonaws.com/dev'
 };

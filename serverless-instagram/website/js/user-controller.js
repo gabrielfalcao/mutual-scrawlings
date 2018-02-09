@@ -77,12 +77,10 @@ var userController = {
 
             that.data.auth0Lock.show(params, function (err, profile, token) {
                 if (err) {
-                    // Error callback
                     alert('There was an error');
                 } else {
-                    // Save the JWT token.
                     localStorage.setItem('userToken', token);
-
+                    localStorage.setItem('profile', JSON.stringify(profile, null, 4));
                     that.configureAuthenticatedRequests();
 
                     that.showUserAuthenticationDetails(profile);
@@ -92,6 +90,7 @@ var userController = {
 
         this.uiElements.logoutButton.click(function (e) {
             localStorage.removeItem('userToken');
+            localStorage.removeItem('profile');
 
             that.uiElements.logoutButton.hide();
             that.uiElements.profileButton.hide();
@@ -100,13 +99,8 @@ var userController = {
         });
 
         this.uiElements.profileButton.click(function (e) {
-            var url = that.data.config.apiBaseUrl + '/profile';
-
-            $.get(url, function (data, status) {
-                // save user profile data in the modal
-                $('#user-profile-raw-json').text(JSON.stringify(data, null, 2));
+                $('#user-profile-raw-json').text(localStorage.getItem('profile'));
                 $('#user-profile-modal').modal();
-            })
         });
     }
 };
