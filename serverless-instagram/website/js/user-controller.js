@@ -21,14 +21,8 @@ var userController = {
 
         this.data.config = config;
         this.data.auth0Lock = new Auth0Lock(
-            config.auth0.clientId, 
+            config.auth0.clientId,
             config.auth0.domain,
-            // options = {
-            //   audience: config.auth0.audience,  
-            //   auth: {
-            //     audience: config.auth0.audience,
-            //   }
-            // }
         );
 
         // check to see if the user has previously logged in

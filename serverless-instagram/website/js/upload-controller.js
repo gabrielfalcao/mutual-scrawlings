@@ -28,7 +28,7 @@ var uploadController = {
         var that = this;
         this.uiElements.uploadButton.on('change', function (result) {
             var file = $('#upload').get(0).files[0];
-            var requestDocumentUrl = that.data.config.apiBaseUrl + '/get_signed_url?filename='+ encodeURI(file.name);
+            var requestDocumentUrl = that.data.config.apiBaseUrl + '/get_signed_url?content_type='+ encodeURI(file.type);
 
             $.ajaxSetup({
                 'beforeSend': function (xhr) {
@@ -44,7 +44,6 @@ var uploadController = {
         });
     },
     upload: function (file, data, that) {
-        console.log(data)
         this.uiElements.uploadButtonContainer.hide();
         this.uiElements.uploadProgressBar.show();
         this.uiElements.uploadProgressBar.find('.progress-bar').css('width', '0');
