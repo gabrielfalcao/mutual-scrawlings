@@ -49,7 +49,7 @@
 
             <span id="upload-image-button" class="btn btn-primary btn-file">
               <span class="glyphicon glyphicon-plus"></span> Upload &lambda;
-              <input id="upload" type="file" name="file" accept="image/*" style="display: none">
+              <input id="upload" type="file" name="file" accept="image/*">
             </span>
 
             <button id="user-profile" class="btn btn-default"><img id="profilepicture"/>
@@ -77,6 +77,8 @@
     <div id="image-template" class="col-sm-12 col-md-3">
       <div class="image-card img-thumbnail">
         <img class="img-responsive" />
+        <div class="metadata">
+        </div>
       </div>
     </div>
     <!-- / movie template -->
@@ -123,7 +125,7 @@
     <script src="js/vendor/lock-8.min.js"></script>
 
     <script src="js/user-controller.js"></script>
-    <script src="js/upload-controller.js"></script>
+    <script src="js/media-controller.js"></script>
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
   </body>

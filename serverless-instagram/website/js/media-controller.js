@@ -1,4 +1,4 @@
-var uploadController = {
+var mediaController = {
     data: {
         config: null
     },
@@ -65,9 +65,7 @@ var uploadController = {
         }).done(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
-            setTimeout(function () {
-                that.fetchFromDynamoDB();
-            }, 4000);
+            that.fetchFromDynamoDB();
         }).fail(function (response) {
             that.uiElements.uploadButtonContainer.show();
             that.uiElements.uploadProgressBar.hide();
@@ -87,19 +85,16 @@ var uploadController = {
             $('#upload-progress').find('.progress-bar').css('width', percentage + '%');
         };
         return xhr;
-    },addImageToScreen: function (imageObj) {
-        // clone the template image element
-        var newImageElement = this.uiElements.imageCardTemplate.clone().attr('id', imageObj.image);
-
-        this.updateImageOnScreen(newImageElement, imageObj);
-
-        this.uiElements.imageList.prepend(newImageElement);
     },
-    updateImageOnScreen: function(imageElement, imageObj) {
+    addImageToScreen: function (data) {
+        // clone the template image element
+        var $img = this.uiElements.imageCardTemplate.clone().attr({
+            'id': data.image,
+        }).show();
 
-        imageElement.find('img').show();
-        // set the image URL
-        imageElement.find('img').attr('src', imageObj.image);
+        $img.find('img').attr('src', data.image).show();
+
+        this.uiElements.imageList.prepend($img);
     },
     fetchFromDynamoDB: function () {
         var that = this;
