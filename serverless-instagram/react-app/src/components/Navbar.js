@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import Auth0Lock from 'auth0-lock'
+import auth0 from 'auth0-js';
+
 import {AuthStorage} from '../utils'
 
 class Navbar extends Component {
+
     constructor(props) {
         super(props);
 
         const {auth0Config} = props;
-        const {domain, clientId} = auth0Config;
-        this.lock = new Auth0Lock(clientId, domain)
+        this.auth0 = new auth0.WebAuth(auth0Config);
 
-        const token = localStorage.getItem('token');
-        const jsonProfile = localStorage.getItem('profile');
-        const profile = JSON.parse(jsonProfile)
+        const token = AuthStorage.getToken()
+        const profile = AuthStorage.getProfile()
 
         this.state = {
             token: token,

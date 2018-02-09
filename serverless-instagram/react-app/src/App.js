@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
 import request from 'superagent'
-import $ from 'jquery'
 import Navbar from './components/Navbar'
 
 import popcorn from './popcorn.png'
 import {AuthStorage} from './utils'
 
 
-const API_BASE_URL = "https://giuy1199u4.execute-api.us-east-1.amazonaws.com/dev"
-
+const API_BASE_URL = "https://94rvjnepk3.execute-api.us-east-1.amazonaws.com/dev"
 
 class App extends Component {
     constructor(props) {
@@ -32,16 +30,27 @@ class App extends Component {
         }
         const {userToken} = this.state;
         const file = acceptedFiles[0];
-        const encodedFileName = encodeURI(file.name);
-        const url = `${API_BASE_URL}/get_signed_url?filename=${encodedFileName}`
+        const url = `${API_BASE_URL}/get_signed_url`
         const bearer = `Bearer ${userToken}`
         console.log(`requesting signed S3 url for file ${file.name} with ${bearer}`, url)
 
-        $.get(url, function (response, status) {
-            console.log(response, status)
-            console.log('url signed successfully', response)
-            this.performUpload(response.url, file);
-        })
+        request
+               .get(url)
+               .set({
+                   "Accept": "application/json",
+                   "Authorization": bearer
+               })
+               .query({filename: file.name})
+               .withCredentials()
+               .on("error", (error) => {
+                   console.error("failed to sign URL:")
+                   console.error(error)
+               })
+               .then((response, status) => {
+                   console.log(response, status)
+                   console.log('url signed successfully', response)
+                   this.performUpload(response.url, file);
+               })
     }
     performUpload(signedUrl, file) {
         this.setState({

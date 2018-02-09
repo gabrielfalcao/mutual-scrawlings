@@ -6,6 +6,6 @@ import 'open-iconic/font/css/open-iconic-bootstrap.css'
 
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
-
-ReactDOM.render(<App auth0Config={{domain: "jjanczyszyn.auth0.com", clientId: "hrIRGALItbQgDRM2m4NrpSZ5RucNu3zd"}} />, document.getElementById('root'));
+import auth0Config from './config'
+ReactDOM.render(<App auth0Config={auth0Config} />, document.getElementById('root'));
 registerServiceWorker();
