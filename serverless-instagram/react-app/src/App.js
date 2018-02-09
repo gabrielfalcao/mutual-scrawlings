@@ -97,7 +97,7 @@ class App extends Component {
                 </div>
 
                 <div className="container">
-            {showDropzone ? <Dropzone className="mx-auto d-block" onDrop={this.onRequestUpload.bind(this)} accept="video/*,image/*">
+            {showDropzone ? <Dropzone className="mx-auto d-block" onDrop={this.onRequestUpload.bind(this)} accept="image/*">
     <span className="btn btn-info ">
         <span className="oi oi-plus"></span>
         </span>
