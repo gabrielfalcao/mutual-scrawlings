@@ -31,10 +31,10 @@ var uploadController = {
             let requestDocumentUrl = that.data.config.apiBaseUrl + '/get_signed_url?content_type='+ encodeURI(file.type);
             let fileSizeMB = Math.round(100 * file.size / (1024 * 1024)) / 100;
             if(fileSizeMB > 1){
-               alert(
-                   "File cannot be greater than 1MB! The file uploaded: " + fileSizeMB
-               );
-               this.value = "";
+                alert(
+                    "File cannot be greater than 1MB! The file uploaded: " + fileSizeMB
+                );
+                this.value = "";
             } else {
 
                 $.get(requestDocumentUrl, function (data, status) {
@@ -114,6 +114,6 @@ var uploadController = {
                 $.each(data, function() {
                     that.addVideoToScreen(this);
                 });
-        });
+            });
     }
 };

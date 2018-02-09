@@ -99,8 +99,8 @@ var userController = {
         });
 
         this.uiElements.profileButton.click(function (e) {
-                $('#user-profile-raw-json').text(localStorage.getItem('profile'));
-                $('#user-profile-modal').modal();
+            $('#user-profile-raw-json').text(localStorage.getItem('profile'));
+            $('#user-profile-modal').modal();
         });
     }
 };
