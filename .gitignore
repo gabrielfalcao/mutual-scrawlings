@@ -77,3 +77,6 @@ secrets.json
 .serverless/*
 */.serverless/*
 __pycache__/
+
+
+config.js
