@@ -4,6 +4,9 @@ import logging
 import os
 import time
 
+
+METADATA_TABLE = os.environ['METADATA_TABLE']
+
 dynamodb = boto3.resource('dynamodb')
 s3 = boto3.client('s3')
 
@@ -15,7 +18,7 @@ def handler(event, context):
     key = event['Records'][0]['s3']['object']['key']
     bucket = event['Records'][0]['s3']['bucket']['name']
 
-    table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+    table = dynamodb.Table(METADATA_TABLE)
 
     item = {
         'user': get_s3_object_author(bucket, key),

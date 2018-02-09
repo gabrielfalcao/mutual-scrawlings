@@ -11,7 +11,7 @@ mimetypes.init()
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-BUCKET = os.environ['S3_BUCKET']
+BUCKET = os.environ['UPLOAD_BUCKET']
 HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": True

@@ -3,11 +3,12 @@ import decimal
 import json
 import os
 
+METADATA_TABLE = os.environ['METADATA_TABLE']
 dynamodb = boto3.resource('dynamodb')
 
 
 def handler(event, context):
-    table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
+    table = dynamodb.Table(METADATA_TABLE)
     result = table.scan()
 
     response = {
