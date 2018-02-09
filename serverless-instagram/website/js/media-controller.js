@@ -88,13 +88,21 @@ var mediaController = {
     },
     addImageToScreen: function (data) {
         // clone the template image element
-        var $img = this.uiElements.imageCardTemplate.clone().attr({
+        var $card = this.uiElements.imageCardTemplate.clone().attr({
             'id': data.image,
         }).show();
 
-        $img.find('img').attr('src', data.image).show();
+        var $img = $card.find('img');
+        var $metadata = $card.find('.metadata');
+        $img.attr('src', data.image).show();
 
-        this.uiElements.imageList.prepend($img);
+        var uploadDate = moment(data.createdAt, "x");
+        var username = data.user.split("@", 1)[0]; // extract from email
+        var metadataText = [uploadDate.fromNow(), "by", username].join(" ");
+        $metadata.text(metadataText)
+
+        // show latest images first
+        this.uiElements.imageList.append($card);
     },
     fetchFromDynamoDB: function () {
         var that = this;
