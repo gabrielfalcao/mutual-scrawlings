@@ -16,17 +16,12 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <style>
-     body {
-       padding-top: 50px;
-       padding-bottom: 20px;
-     }
-    </style>
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="css/main.css">
 
     <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
   </head>
+
   <body>
     <!--[if lt IE 8]>
       <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
@@ -35,66 +30,47 @@
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                  aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">&lambda; Serverless Image Hosting</a>
+          <div class="page-name" ><img src="camera.png" >Serverless Insagram ❤️&lambda; </div>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <div class="navbar-form navbar-right">
-
-            <span id="upload-image-button" class="btn btn-primary btn-file">
+            <span id="upload-image-button" class="btn btn-warning btn-file">
               <span class="glyphicon glyphicon-plus"></span> Upload &lambda;
               <input id="upload" type="file" name="file" accept="image/*">
             </span>
-
-            <button id="user-profile" class="btn btn-default"><img id="profilepicture"/>
-              <span id="profilename"></span> &lambda; </button>
-
-            <button id="auth0-login" class="btn btn-primary">Sign in</button>
+            <button id="auth0-login" class="btn btn-warning">Sign in</button>
             <button id="auth0-logout" class="btn btn-warning">Sign Out</button>
-
           </div>
-        </div><!--/.navbar-collapse -->
+        </div>
       </div>
     </nav>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div id="hero" class="container">
-        <img src="popcorn.png" />
-
-        <h1>All images. All the time.</h1>
-        <h2>Guaranteed100% server-free. &lambda; </h2>
+        <a id="user-profile">
+          <img id="profilepicture"/>
+          <h1 id="profilename"></h1></a>
       </div>
     </div>
 
-    <!-- Movie template. This is cloned, never shown directly -->
+    <!-- Image template. This is cloned, never shown directly -->
     <div id="image-template" class="col-sm-12 col-md-3">
-      <div class="image-card img-thumbnail">
+      <div class="image-card ">
         <img class="img-responsive" />
         <div class="metadata">
         </div>
       </div>
     </div>
-    <!-- / movie template -->
+    <!-- / image template -->
 
     <div class="container" id="image-list-container">
-
       <div class="progress" id="upload-progress">
         <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="20"
-             aria-valuemin="0" aria-valuemax="100" style="width:20%"><span class="sr-only">20% Complete</span></div>
+             aria-valuemin="0" aria-valuemax="100" style="width:20%">
+          <span class="sr-only">20% Complete</span></div>
       </div>
-
-      <!-- Row of movies -->
-      <div id="image-list" class="row">
-
-      </div>
-
+      <!-- Row of images -->
+      <div id="image-list" class="row"></div>
     </div> <!-- /container -->
 
     <!-- User profile modal -->
@@ -102,8 +78,8 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                                                                            aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">User Profile Information (from Auth0)</h4>
           </div>
           <div class="modal-body">
@@ -111,13 +87,12 @@
             <pre id="user-profile-raw-json"></pre>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     <!-- User profile modal -->
-
 
     <script src="js/vendor/jquery-1.11.2.min.js"></script>
     <script src="js/vendor/bootstrap.min.js"></script>
