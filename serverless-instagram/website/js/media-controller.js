@@ -7,7 +7,6 @@ var mediaController = {
         uploadProgressBar: null,
         imageCardTemplate: null,
         imageList: null,
-        loadingIndicator: null
     },
     init: function (configConstants) {
         this.data.config = configConstants;
@@ -19,7 +18,6 @@ var mediaController = {
 
         this.uiElements.imageCardTemplate = $('#image-template');
         this.uiElements.imageList = $('#image-list');
-        this.uiElements.loadingIndicator = $('#loading-indicator');
 
         // this.data.config = config;
         this.fetchFromDynamoDB();
