@@ -109,10 +109,10 @@ var mediaController = {
                 url: this.data.config.apiBaseUrl + '/list',
                 type: 'GET',
                 processData: false
-            }).done(function (images, status) {
+            }).done(function (unordered, status) {
                 this.uiElements.imageList.html("");
-                images.sort(function(a, b){
-                    return parseInt(a.createdAt, 10) < parseInt(b.createdAt, 10);
+                var images = unordered.sort(function(a, b){
+                    return parseFloat(b.createdAt, 10) - parseFloat(a.createdAt, 10);
                 });
                 $.each(images, function(index, image) {
                     this.addImageToScreen(image);
