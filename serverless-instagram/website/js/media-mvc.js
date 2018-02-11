@@ -1,6 +1,6 @@
-var ImageCardHelper = {
+let ImageCardHelper = {
     render: function(url, description){
-        var $new = $('#image-template').clone().attr({
+        let $new = $('#image-template').clone().attr({
             'id': url,
         }).show();
 
@@ -12,24 +12,24 @@ var ImageCardHelper = {
         /** prepare image information **/
 
         // parse date from unix timestamp
-        var uploadDate = moment(data.createdAt, "x");
+        let uploadDate = moment(data.createdAt, "x");
 
         // extract username from email
-        var username = data.user.split("@", 1)[0];
+        let username = data.user.split("@", 1)[0];
 
         // generate a description
-        var description = [uploadDate.fromNow(), "by", username].join(" ");
+        let description = [uploadDate.fromNow(), "by", username].join(" ");
 
         // return the final result
-        var result = {
+        let result = {
             url: data.image,
             description: description
         };
         return result;
     }
-}
+};
 
-var UI = {
+let UI = {
     showError: function(message) {
         alert(message);
     },
@@ -47,7 +47,7 @@ var UI = {
                 let file = $('#upload').get(0).files[0];
                 let fileSizeMB = Math.round(100 * file.size / (1024 * 1024)) / 100;
                 if(fileSizeMB > 1){
-                    var message = [
+                    let message = [
                         "File cannot be greater than 1MB!",
                         "The file uploaded:",
                         "" + fileSizeMB + ""
@@ -61,8 +61,8 @@ var UI = {
     },
     Image: {
         add: function(data) {
-            var info = ImageCardHelper.extractInformation(data)
-            $card = ImageCardHelper.render(info.url, info.description)
+            let info = ImageCardHelper.extractInformation(data);
+            $card = ImageCardHelper.render(info.url, info.description);
             UI.Gallery.add($card);
             return this;
         }
@@ -77,12 +77,12 @@ var UI = {
     },
     UploadProgress: {
         show: function(){
-            $('#upload-progress').show()
+            $('#upload-progress').show();
             return this;
         },
 
         hide: function(){
-            $('#upload-progress').hide()
+            $('#upload-progress').hide();
             return this;
         },
         reset: function() {
@@ -93,22 +93,22 @@ var UI = {
             return this;
         }
     }
-}
+};
 
-var HttpRequest = {
+let HttpRequest = {
     handleProgress: function(evt) {
-        var percentage = evt.loaded / evt.total * 100;
+        let percentage = evt.loaded / evt.total * 100;
         UI.UploadProgress.update(percentage);
     },
     factory: function() {
-        var xhr = $.ajaxSettings.xhr();
+        let xhr = $.ajaxSettings.xhr();
         xhr.addEventListener('progress', HttpRequest.handleProgress);
         xhr.upload.addEventListener('progress', HttpRequest.handleProgress);
         return xhr;
     }
-}
+};
 
-var S3 = {
+let S3 = {
     uploadImage: function(signedUrl, file) {
         return $.ajax({
             url: signedUrl,
@@ -121,15 +121,15 @@ var S3 = {
             xhr: HttpRequest.factory,
         })
     }
-}
+};
 
-var Lambda = {
+let Lambda = {
     getSignedS3Url: function(url, accessToken) {
         return $.ajax({
             url: url,
             type: 'GET',
             beforeSend: function(xhr) {
-                var bearer = ['Bearer', accessToken].join(' ');
+                let bearer = ['Bearer', accessToken].join(' ');
                 xhr.setRequestHeader('Authorization', bearer);
             }
         })
@@ -141,14 +141,14 @@ var Lambda = {
             type: 'GET',
             processData: false,
             beforeSend: function(xhr) {
-                var bearer = ['Bearer', accessToken].join(' ');
+                let bearer = ['Bearer', accessToken].join(' ');
                 xhr.setRequestHeader('Authorization', bearer);
             }
         })
     }
-}
+};
 
-var mediaController = {
+let mediaController = {
     config: null,
     uiElements: {
         uploadButton: null,
@@ -164,7 +164,7 @@ var mediaController = {
     wireEvents: function () {
         UI.UploadButton.bindEvents(function(file){
             let url = this.config.apiBaseUrl + '/get_signed_url?content_type='+ encodeURI(file.type);
-            var token = localStorage.getItem('userToken');
+            let token = localStorage.getItem('userToken');
             Lambda.getSignedS3Url(url, token).then(function(data, textStatus){
                 this.upload(file, data)
             }.bind(this));
@@ -172,12 +172,12 @@ var mediaController = {
     },
     upload: function (file, data) {
         // hide upload controls and show progress bar set to 0
-        UI.UploadButton.hide()
+        UI.UploadButton.hide();
         UI.UploadProgress.show().reset();
 
         S3.uploadImage(data.url, file).then(function(data, textStatus){
             // show upload controls and hide progress bar
-            UI.UploadButton.show()
+            UI.UploadButton.show();
             UI.UploadProgress.hide();
 
             switch (textStatus) {
@@ -197,14 +197,13 @@ var mediaController = {
         }.bind(this));
     },
     fetchFromDynamoDB: function () {
-        var url = this.config.apiBaseUrl + '/list';
-        var token = localStorage.getItem('userToken');
+        let url = this.config.apiBaseUrl + '/list';
+        let token = localStorage.getItem('userToken');
 
         Lambda.getImageListFromDynamoDB(url, token).then(function (unordered, status) {
-            console.log(unordered)
             UI.Gallery.clear();
-            var images = unordered.sort(function(a, b){
-                return parseFloat(b.createdAt, 10) - parseFloat(a.createdAt, 10);
+            let images = unordered.sort(function(a, b){
+                return parseFloat(b.createdAt) - parseFloat(a.createdAt);
             });
             $.each(images, function(index, data) {
                 UI.Image.add(data);
